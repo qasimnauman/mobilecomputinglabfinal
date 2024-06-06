@@ -1,0 +1,211 @@
+import 'package:coffee_shop/services/firestore_service.dart';
+import 'package:flutter/material.dart';
+import 'package:random_string/random_string.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+
+class HomeScreen extends StatefulWidget {
+  const HomeScreen({super.key});
+  
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  Stream? userlist;
+
+  TextEditingController namecontroller = new TextEditingController();
+  TextEditingController emailcontroller = new TextEditingController();
+  TextEditingController passcontroller = new TextEditingController();
+
+  TextEditingController unamecontroller = new TextEditingController();
+  TextEditingController uemailcontroller = new TextEditingController();
+  TextEditingController upasscontroller = new TextEditingController();
+
+
+  getontheload() async {
+    userlist = await DatabaseService().getUsers();
+    setState(() {});
+  }
+
+  @override
+  void initState() {
+    getontheload();
+    super.initState();
+  }
+
+  Widget allusersData(){
+      return StreamBuilder(
+        stream: userlist, 
+        builder: (context, AsyncSnapshot snapshot){
+          return snapshot.hasData? ListView.builder(
+            itemCount: snapshot.data.docs.length,
+            itemBuilder: (context, index){
+              return Column(
+                children: [
+                  ListTile(
+                    title: Text(snapshot.data.docs[index].data()['name']),
+                    subtitle: Text(snapshot.data.docs[index].data()['email']),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        snapshot.data.docs[index].data()['password'],
+                        style: TextStyle(
+                          color: Colors.red,
+                          fontSize: 20,
+                        ),
+                      ),
+                      GestureDetector(
+                        onTap: (){
+                          unamecontroller.text = snapshot.data.docs[index].data()['name'];
+                          uemailcontroller.text = snapshot.data.docs[index].data()['email'];
+                          upasscontroller.text = snapshot.data.docs[index].data()['password'];
+                          EditUserdata(snapshot.data.docs[index].data()['id']);
+                        },
+                        child: Icon(
+                          Icons.edit,
+                          color: Colors.blue,
+                        ),
+                      ),
+                      GestureDetector(
+                        onTap: () async {
+                          await DatabaseService().deleteUser(snapshot.data.docs[index].data()['id']).then((value) {
+                            Fluttertoast.showToast(
+                              msg: 'User deleted successfully',
+                              toastLength: Toast.LENGTH_SHORT,
+                              gravity: ToastGravity.BOTTOM,
+                              timeInSecForIosWeb: 1,
+                              backgroundColor: Colors.red,
+                              textColor: Colors.white,
+                              fontSize: 16.0,
+                            );
+                          });
+                        },
+                        child: Icon(
+                          Icons.delete,
+                        ),
+                      )
+                    ],
+                  )
+                ],
+              );
+            },
+          ): Container();
+        }
+      ); 
+    }
+
+  Future EditUserdata(String id)=> showDialog(
+    context: context,
+    builder: (context) => AlertDialog(
+      content: Container(
+        child: Column(
+          children: [
+            TextFormField(
+              controller: unamecontroller,
+              decoration: InputDecoration(
+                labelText: 'Edit Name',
+              ),
+            ),
+            SizedBox(height: 16),
+            TextFormField(
+              controller: uemailcontroller,
+              decoration: InputDecoration(
+                labelText: 'Edit Email',
+              ),
+            ),
+            SizedBox(height: 16),
+            TextFormField(
+              controller: upasscontroller,
+              decoration: InputDecoration(
+                labelText: 'Edit Passowrd',
+              ),
+            ),
+            SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: () async {
+                Map<String, dynamic> updateinfo = {
+                  'name': unamecontroller.text,
+                  'id': id,
+                  'email': uemailcontroller.text,
+                  'password': upasscontroller.text,
+                };
+                await DatabaseService().updateuser(id, updateinfo).then((value) {
+                  Navigator.pop(context);
+                });
+              },
+              child: Text('Update'),
+            ),
+          ],
+        ),
+      ),
+    )
+  );
+
+  @override
+  Widget build(BuildContext context) {
+    
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Home'),
+        centerTitle: true,
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            TextFormField(
+              controller: namecontroller,
+              decoration: InputDecoration(
+                labelText: 'Name',
+              ),
+            ),
+            SizedBox(height: 16),
+            TextFormField(
+              controller: emailcontroller,
+              decoration: InputDecoration(
+                labelText: 'Email',
+              ),
+            ),
+            SizedBox(height: 16),
+            TextFormField(
+              controller: passcontroller,
+              decoration: InputDecoration(
+                labelText: 'Password',
+              ),
+            ),
+            SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: () async {
+                String id = randomAlphaNumeric(16);
+                Map<String, dynamic> newuser = {
+                  'id':id,
+                  'name': namecontroller.text,
+                  'email': emailcontroller.text,
+                  'password': passcontroller.text,
+                };
+                await DatabaseService().addUser(newuser, id).then((value) {
+                  Fluttertoast.showToast(
+                    msg: 'User added successfully',
+                    toastLength: Toast.LENGTH_SHORT,
+                    gravity: ToastGravity.BOTTOM,
+                    timeInSecForIosWeb: 1,
+                    backgroundColor: Colors.green,
+                    textColor: Colors.white,
+                    fontSize: 16.0,
+                  );
+                }); 
+              },
+              child: Text('Save'),
+            ),
+            SizedBox(height: 16),
+            Expanded(
+              child: allusersData()
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
