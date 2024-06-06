@@ -3,7 +3,6 @@ import 'package:coffee_shop/services/firestore_service.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:random_string/random_string.dart';
 
 class SignUpScreen extends StatefulWidget {
    final TabController tabController;
