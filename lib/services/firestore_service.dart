@@ -2,10 +2,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class DatabaseService {
 
-  Future addUser(Map<String, dynamic> userdata, String id) async {
+  Future addUser(Map<String, dynamic> userdata) async {
     return await FirebaseFirestore.instance
       .collection("Users")
-      .doc(id)
+      .doc(FirebaseFirestore.instance.collection("Users").doc().id)
       .set(userdata);
   }
 
