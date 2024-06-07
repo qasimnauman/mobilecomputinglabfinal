@@ -206,11 +206,11 @@ class _SignInScreenState extends State<SignInScreen> {
                 width: MediaQuery.of(context).size.width * 0.9,
                 margin: const EdgeInsets.fromLTRB(0, 30, 0, 0),
                 decoration: BoxDecoration(
-                  color: const Color.fromRGBO(214, 151, 83, 1),
+                  color: const Color.fromRGBO(56, 54, 51, 1),
                   borderRadius: BorderRadius.circular(12),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.2),
+                      color: Colors.deepPurple.withOpacity(0.2),
                       spreadRadius: 1,
                       blurRadius: 20,
                       offset: const Offset(0, 3),

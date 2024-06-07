@@ -60,7 +60,7 @@ class _LoginsignupState extends State<Loginsignup> with SingleTickerProviderStat
                   indicatorSize: TabBarIndicatorSize.tab,
                   dividerColor: Colors.transparent,
                   indicator: const BoxDecoration(
-                    color: Color.fromRGBO(214, 151, 93, 1),
+                    color: Color.fromRGBO(56, 54, 51, 1),
                     borderRadius: BorderRadius.all(Radius.circular(10)),
                   ),
                   labelColor: Colors.white,

@@ -26,4 +26,12 @@ class DatabaseService {
       .doc(id)
       .delete();
   }
+
+  Future<DocumentSnapshot> getCurrentUser(String id) async {
+    return await FirebaseFirestore.instance
+      .collection("Users")
+      .doc(id)
+      .get();
+  }
+
 }
